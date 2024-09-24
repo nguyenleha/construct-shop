@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   mysql:
-    container_name: mysql
+    container_name: mysql_contruct
     # platform: linux/x86_64
     image: mysql:8.0
     ports:
@@ -18,7 +18,7 @@ services:
 
   ###### Phpmyadmin
   phpmyadmin:
-    container_name: phpmyadmin
+    container_name: phpmyadmin_contruct
     # platform: linux/x86_64
     image: phpmyadmin/phpmyadmin:latest
     ports:
