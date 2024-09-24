@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FilesModule } from './v1/files/files.module';
+import { PageModule } from './v1/page/page.module';
+import { PermissionModule } from './v1/permission/permission.module';
 
 @Module({
   imports: [
@@ -24,8 +26,10 @@ import { FilesModule } from './v1/files/files.module';
       isGlobal: true,
     }),
     FilesModule,
+    PageModule,
+    PermissionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
