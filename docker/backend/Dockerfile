@@ -8,13 +8,13 @@ FROM node:20.15.1 AS build
 WORKDIR /usr/src/app
 
 # Sao chép file package.json và package-lock.json từ thư mục backend
-COPY ../../backend/package*.json ./
+COPY ./backend/package*.json ./
 
 # Cài đặt các dependencies
 RUN npm install
 
 # Sao chép toàn bộ mã nguồn từ thư mục backend vào container
-COPY ../../backend .
+COPY ./backend .
 
 # Build ứng dụng NestJS
 RUN npm run build

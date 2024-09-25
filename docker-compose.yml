@@ -3,7 +3,7 @@ version: '3.9'
 services:
   mysql:
     container_name: mysql_construct
-    platform: linux/x86_64
+    # platform: linux/x86_64
     image: mysql:8.0
     ports:
       - "${MYSQL_HOST_PORT:-3306}:3306"
@@ -19,7 +19,7 @@ services:
   ###### Phpmyadmin
   phpmyadmin:
     container_name: phpmyadmin_construct
-    platform: linux/x86_64
+    # platform: linux/x86_64
     image: phpmyadmin/phpmyadmin:latest
     ports:
       - "${PHPMYADMIN_PORT:-8888}:80"
