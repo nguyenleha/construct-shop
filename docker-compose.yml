@@ -49,9 +49,6 @@ services:
     depends_on:
       - mysql
       - phpmyadmin
-    volumes:
-      - ./backend:/usr/src/app
-    # command: npm run start:prod
  
   ##### Nginx
   nginx:
