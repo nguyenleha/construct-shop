@@ -1,15 +1,27 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { VersioningType } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import helmet from 'helmet';
+import { createValidationPipe } from './common/pipes/validation.pipe';
+import { FileTooLargeFilter } from './common/filters/file-too-large.filter';
+import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // Security
   app.use(helmet());
+
+  // Validation
+  app.useGlobalPipes(createValidationPipe());
+
+  // Apply the custom filter globally
+  app.useGlobalFilters(new FileTooLargeFilter());
+
+  const reflector = app.get(Reflector);
+  app.useGlobalInterceptors(new TransformInterceptor(reflector));
 
   // Configuration
   const configService = app.get(ConfigService);

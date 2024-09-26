@@ -7,6 +7,7 @@ import { TestDbModule } from './modules-v1/test-db/test-db.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import ms from 'ms';
 import { APP_GUARD } from '@nestjs/core';
+import { MediaModule } from './modules-v1/media/media.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { APP_GUARD } from '@nestjs/core';
       inject: [ConfigService],
     }),
     TestDbModule,
+    MediaModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
