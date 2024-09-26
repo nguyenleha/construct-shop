@@ -1,0 +1,1 @@
+# Các interface hoặc type được dùng chung toàn project

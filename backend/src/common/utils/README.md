@@ -1,0 +1,1 @@
+# Các hàm hoặc helper dùng chung

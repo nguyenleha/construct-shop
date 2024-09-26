@@ -1,0 +1,1 @@
+# Mọi thứ liên quan đến database (migrations, seeders)
