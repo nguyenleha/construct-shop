@@ -58,4 +58,4 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 data/mysql
 docker/db/mysql
-public/images/*
+backend/public/images/*

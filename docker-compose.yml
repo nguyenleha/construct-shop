@@ -29,37 +29,37 @@ services:
       - UPLOAD_LIMIT=${MYSQL_UPLOAD_LIMIT:-200M}
     depends_on: ["mysql"]
 
-  backend:
-    container_name: backend_construct
-    # platform: linux/x86_64
-    # image: backend
-    build:
-      context: .
-      dockerfile: ./docker/backend/Dockerfile
-    restart: unless-stopped
-    ports:
-      - "${PORT_API:-2209}:2209"
-    environment:
-      - NODE_ENV=production
-      - JWT_ACCESS_TOKEN_SECRET=${JWT_ACCESS_TOKEN_SECRET:-construct_access}
-      - JWT_ACCESS_EXPIRES=${JWT_ACCESS_EXPIRES:-1d}
-      - JWT_REFRESH_TOKEN_SECRET=${JWT_REFRESH_TOKEN_SECRET:-construct_refresh}
-      - JWT_REFRESH_EXPIRES=${JWT_REFRESH_EXPIRES:-3d}
-      - IS_MULTI_USER=${IS_MULTI_USER:-0}
-    depends_on:
-      - mysql
-      - phpmyadmin
+  # backend:
+  #   container_name: backend_construct
+  #   # platform: linux/x86_64
+  #   # image: backend
+  #   build:
+  #     context: .
+  #     dockerfile: ./docker/backend/Dockerfile
+  #   restart: unless-stopped
+  #   ports:
+  #     - "${PORT_API:-2209}:2209"
+  #   environment:
+  #     - NODE_ENV=production
+  #     - JWT_ACCESS_TOKEN_SECRET=${JWT_ACCESS_TOKEN_SECRET:-construct_access}
+  #     - JWT_ACCESS_EXPIRES=${JWT_ACCESS_EXPIRES:-1d}
+  #     - JWT_REFRESH_TOKEN_SECRET=${JWT_REFRESH_TOKEN_SECRET:-construct_refresh}
+  #     - JWT_REFRESH_EXPIRES=${JWT_REFRESH_EXPIRES:-3d}
+  #     - IS_MULTI_USER=${IS_MULTI_USER:-0}
+  #   depends_on:
+  #     - mysql
+  #     - phpmyadmin
  
-  ##### Nginx
-  nginx:
-    container_name: nginx_construct
-    image: nginx:latest
-    volumes:
-      - "./backend:/var/www/api"
-      - "./docker/nginx/.htpasswd:/etc/nginx/.htpasswd"
-      - "./docker/nginx/conf.d/${BUILD_ENV:-local}.conf:/etc/nginx/nginx.conf"
-    ports: ["${NGINX_HOST_PORT:-80}:80"]
-    environment:
-      SERVER_NAMES_HASH_BUCKET_SIZE: 64
-    depends_on:
-      - backend
+  # ##### Nginx
+  # nginx:
+  #   container_name: nginx_construct
+  #   image: nginx:latest
+  #   volumes:
+  #     - "./backend:/var/www/api"
+  #     - "./docker/nginx/.htpasswd:/etc/nginx/.htpasswd"
+  #     - "./docker/nginx/conf.d/${BUILD_ENV:-local}.conf:/etc/nginx/nginx.conf"
+  #   ports: ["${NGINX_HOST_PORT:-80}:80"]
+  #   environment:
+  #     SERVER_NAMES_HASH_BUCKET_SIZE: 64
+  #   depends_on:
+  #     - backend

@@ -1,15 +1,29 @@
-import { Controller, Body, Get } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Query,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { MediaService } from './media.service';
-import { CreateMediaDto } from './dto/create-media.dto';
 import { ResponseMessage } from 'src/common/decorators/responseMessage';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { GetParamsMediaDto } from './dto/get-media.dto';
 
 @Controller('media')
 export class MediaController {
   constructor(private readonly mediaService: MediaService) {}
 
-  @ResponseMessage('Test message')
+  @Post()
+  @ResponseMessage('Upload hình thành công')
+  @UseInterceptors(FileInterceptor('image'))
+  create(@UploadedFile() image: Express.Multer.File) {
+    return this.mediaService.create(image);
+  }
+
   @Get()
-  create(@Body() createMediaDto: CreateMediaDto) {
-    return this.mediaService.create(createMediaDto);
+  findAll(@Query() qs: GetParamsMediaDto) {
+    return this.mediaService.findAll(qs);
   }
 }

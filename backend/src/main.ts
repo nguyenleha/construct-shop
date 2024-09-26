@@ -7,6 +7,7 @@ import helmet from 'helmet';
 import { createValidationPipe } from './common/pipes/validation.pipe';
 import { FileTooLargeFilter } from './common/filters/file-too-large.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -19,6 +20,9 @@ async function bootstrap() {
 
   // Apply the custom filter globally
   app.useGlobalFilters(new FileTooLargeFilter());
+
+  // Serve static files
+  app.useStaticAssets(join(__dirname, '..', 'public'));
 
   const reflector = app.get(Reflector);
   app.useGlobalInterceptors(new TransformInterceptor(reflector));

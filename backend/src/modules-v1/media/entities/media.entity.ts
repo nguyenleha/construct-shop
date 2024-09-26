@@ -15,6 +15,9 @@ export class Media {
   @Column()
   name: string;
 
+  @Column()
+  image: string;
+
   @Column({ default: true })
   isActive: boolean;
 
