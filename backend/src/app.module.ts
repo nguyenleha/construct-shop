@@ -4,6 +4,10 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FilesModule } from './v1/files/files.module';
+import { AuthModule } from './v1/auth/auth.module';
+import { UserModule } from './v1/user/user.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './v1/auth/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -24,8 +28,16 @@ import { FilesModule } from './v1/files/files.module';
       isGlobal: true,
     }),
     FilesModule,
+    AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: JwtAuthGuard,
+    // },
+  ],
 })
-export class AppModule { }
+export class AppModule {}
