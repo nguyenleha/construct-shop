@@ -10,3 +10,6 @@ Vào mySQL tài khoản là
 
 # nest g resource [ten file] --no-spec
 nest g resource modules-v1/permission --no-spec
+
+
+rrrrr
