@@ -1,0 +1,1 @@
+# Các entity dùng chung
