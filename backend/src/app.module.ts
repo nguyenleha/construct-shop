@@ -8,6 +8,8 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import ms from 'ms';
 import { APP_GUARD } from '@nestjs/core';
 import { MediaModule } from './modules-v1/media/media.module';
+import { UserModule } from './modules-v1/user/user.module';
+import { AuthModule } from './modules-v1/auth/auth.module';
 
 @Module({
   imports: [
@@ -41,6 +43,8 @@ import { MediaModule } from './modules-v1/media/media.module';
     }),
     TestDbModule,
     MediaModule,
+    UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
