@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,6 +12,22 @@ export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
+
+  handleResponse(user: User) {
+    delete user.password;
+    delete user.isActive;
+    delete user.isDeleted;
+    delete user.deleted_at;
+    return user;
+  }
+
+  async checkIdExist(id: number): Promise<boolean> {
+    const user = await this.userRepository.exist({ where: { id } });
+    if (!user) {
+      throw new UnprocessableEntityException('Tài khoản không tồn tại');
+    }
+    return user;
+  }
   async create(createUserDto: CreateUserDto) {
     const { password, ...userDetail } = createUserDto;
 
@@ -23,10 +39,10 @@ export class UserService {
     // Save the user to the database
     const userCreated = await this.userRepository.save(createUser);
 
-    return userCreated; // Return the created user
+    return this.handleResponse(userCreated); // Return the created user
   }
   findAll() {
-    return `This action returns all user`;
+    return this.userRepository.find();
   }
 
   findOne(id: number) {
@@ -44,7 +60,12 @@ export class UserService {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    await this.checkIdExist(id);
+    const updateUser = {
+      isDeleted: true,
+      deleted_at: new Date(),
+    };
+    return await this.userRepository.update(id, updateUser);
   }
 }

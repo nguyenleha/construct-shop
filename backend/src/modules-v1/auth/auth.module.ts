@@ -7,6 +7,7 @@ import { LocalStrategy } from 'src/common/stragery/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from 'src/common/stragery/jwt.strategy';
+import ms from 'ms';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { JwtStrategy } from 'src/common/stragery/jwt.strategy';
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
         signOptions: {
-          expiresIn: configService.get<string>('JWT_ACCESS_EXPIRES'),
+          expiresIn: ms(configService.get<string>('JWT_ACCESS_EXPIRES')),
         },
       }),
       inject: [ConfigService],
