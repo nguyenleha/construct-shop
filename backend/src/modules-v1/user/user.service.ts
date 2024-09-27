@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { getHashPassword } from 'src/common/utils/handleResponse';
+import { compare, compareSync } from 'bcryptjs';
 
 @Injectable()
 export class UserService {
@@ -31,7 +32,14 @@ export class UserService {
   findOne(id: number) {
     return `This action returns a #${id} user`;
   }
-
+  findOneUsername(username: string) {
+    return this.userRepository.findOne({
+      where: { email: username },
+    });
+  }
+  isValidPassword(password: string, hash: string) {
+    return compareSync(password, hash);
+  }
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
