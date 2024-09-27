@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 
@@ -17,7 +17,7 @@ export class AuthService {
         return user;
       }
     }
-    return null;
+    throw new UnprocessableEntityException('Tài khoản hoặc mật khẩu không hợp lệ');;
   }
   async login(user: any) {
     const payload = { username: user.email, sub: user.id };

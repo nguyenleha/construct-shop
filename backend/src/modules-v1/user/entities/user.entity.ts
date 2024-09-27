@@ -41,11 +41,11 @@ export class User {
   isDeleted: boolean;
 
   @CreateDateColumn()
-  created_at: Date; // Ngày tạo
+  created_at: Date; 
 
   @UpdateDateColumn()
-  updated_at: Date; // Ngày cập nhật
+  updated_at: Date; 
 
   @DeleteDateColumn()
-  deleted_at: Date; // Ngày xóa
+  deleted_at: Date; 
 }
