@@ -3,12 +3,12 @@ import {
   Get,
   Post,
   Query,
-  UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { MediaService } from './media.service';
 import { ResponseMessage } from 'src/common/decorators/responseMessage';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { GetParamsMediaDto } from './dto/get-media.dto';
 
 @Controller('media')
@@ -17,9 +17,9 @@ export class MediaController {
 
   @Post()
   @ResponseMessage('Upload hình thành công')
-  @UseInterceptors(FileInterceptor('image'))
-  create(@UploadedFile() image: Express.Multer.File) {
-    return this.mediaService.create(image);
+  @UseInterceptors(FilesInterceptor('image'))
+  create1(@UploadedFiles() images: Express.Multer.File[]) {
+    return this.mediaService.create(images);
   }
 
   @Get()
