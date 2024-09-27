@@ -10,6 +10,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { MediaModule } from './modules-v1/media/media.module';
 import { UserModule } from './modules-v1/user/user.module';
 import { AuthModule } from './modules-v1/auth/auth.module';
+import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -47,6 +48,6 @@ import { AuthModule } from './modules-v1/auth/auth.module';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
+  providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
 export class AppModule {}
