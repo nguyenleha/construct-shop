@@ -3,10 +3,11 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Media } from './entities/media.entity';
 import { ConfigService } from '@nestjs/config';
-import { addingFile } from 'src/common/utils/addingFile';
-import { handleResponseRemoveKey } from 'src/common/utils/handleResponse';
 import { GetParamsMediaDto } from './dto/get-media.dto';
-import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
+// import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
+import { PaginationService } from 'src/common/utils/pagination.service';
+import { PaginationResponse } from 'src/interfaces/common.interface';
+import { CommonService } from 'src/common/utils/Common.service';
 
 @Injectable()
 export class MediaService {
@@ -14,25 +15,47 @@ export class MediaService {
     @InjectRepository(Media)
     private readonly mediaRepository: Repository<Media>,
     private configService: ConfigService,
+    private commonService: CommonService,
+    private paginationService: PaginationService,
   ) {}
 
-  async create(image: Express.Multer.File) {
-    if (!image) {
+  async create(
+    images: Express.Multer.File[],
+  ): Promise<{ count: number; media_list: Media[] }> {
+    if (!images.length) {
       throw new UnprocessableEntityException('Image không tồn tại');
     }
 
-    const imageValue = await addingFile(image, '/media', this.configService);
-    const newCompany = await this.mediaRepository.save({
-      name: imageValue.name,
-      image: image ? imageValue.image : null,
-    });
-    return handleResponseRemoveKey({
-      ...newCompany,
-      image: image ? imageValue.imageFullPath : null,
-    });
+    const processImage = async (image: Express.Multer.File) => {
+      const imageValue = await this.commonService.addingFile(
+        image,
+        '/media',
+        this.configService,
+      );
+      const newMedia = await this.mediaRepository.save({
+        name: imageValue.name,
+        image: image ? imageValue.image : null,
+      });
+      return this.commonService.removeKey({
+        ...newMedia,
+        image: image ? imageValue.imageFullPath : null,
+      });
+    };
+
+    // Nếu chỉ có 1 hình ảnh
+    if (images.length === 1) {
+      return processImage(images[0]);
+    }
+
+    // Nếu có nhiều hình ảnh
+    const media_list = await Promise.all(images.map(processImage));
+    return {
+      count: media_list.length,
+      media_list,
+    };
   }
 
-  async findAll(qs: GetParamsMediaDto) {
+  async findAll(qs: GetParamsMediaDto): Promise<PaginationResponse<Media>> {
     const { page, per_page, orderByField, order, name } = qs;
     const queryBuilder = this.mediaRepository
       .createQueryBuilder('media')
@@ -43,42 +66,12 @@ export class MediaService {
       queryBuilder.andWhere('company.name LIKE :name', { name: `%${name}%` });
     }
 
-    if (page && per_page) {
-      const domain = this.configService.get<string>('DOMAIN_API');
-      const port = this.configService.get<number>('PORT_API');
-      // Pagination
-      const options: IPaginationOptions = {
-        page,
-        limit: per_page,
-        route: `${domain}${port ? `:${port}` : ''}/api/v1/media`,
-      };
-
-      const { items, meta, ...companies } = await paginate<Media>(
-        queryBuilder,
-        options,
-      );
-
-      const from = (page - 1) * per_page + 1;
-      const to = Math.min(page * per_page, meta.totalItems);
-
-      return {
-        response: { count: items.length, media_list: items },
-        meta: { ...meta, from, to },
-        ...companies,
-      };
-    } else {
-      const items = await queryBuilder.getMany();
-
-      return {
-        response: { count: items.length, media_list: items },
-        meta: {
-          totalItems: items.length,
-          totalPages: 1,
-          currentPage: 1,
-          from: 1,
-          to: items.length,
-        },
-      };
-    }
+    return await this.paginationService.paginateEntity<Media>(
+      queryBuilder,
+      page,
+      per_page,
+      '/api/v1/media',
+      this.configService,
+    );
   }
 }

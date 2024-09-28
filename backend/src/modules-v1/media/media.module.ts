@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Media } from './entities/media.entity';
 import { MulterConfigService } from 'src/config/multe.config';
 import { MulterModule } from '@nestjs/platform-express';
+import { PaginationService } from 'src/common/utils/pagination.service';
+import { CommonService } from 'src/common/utils/Common.service';
 
 @Module({
   imports: [
@@ -14,6 +16,6 @@ import { MulterModule } from '@nestjs/platform-express';
     }),
   ],
   controllers: [MediaController],
-  providers: [MediaService],
+  providers: [MediaService, PaginationService, CommonService],
 })
 export class MediaModule {}
