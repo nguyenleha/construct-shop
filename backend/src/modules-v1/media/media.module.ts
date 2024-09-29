@@ -7,10 +7,11 @@ import { MulterConfigService } from 'src/config/multe.config';
 import { MulterModule } from '@nestjs/platform-express';
 import { PaginationService } from 'src/common/utils/pagination.service';
 import { CommonService } from 'src/common/utils/Common.service';
+import { Trash } from './entities/trash.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Media]),
+    TypeOrmModule.forFeature([Media, Trash]),
     MulterModule.registerAsync({
       useClass: MulterConfigService,
     }),

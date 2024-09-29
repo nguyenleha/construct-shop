@@ -1,8 +1,10 @@
+import { User } from 'src/modules-v1/user/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
-  DeleteDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -18,18 +20,17 @@ export class Media {
   @Column()
   image: string;
 
-  @Column({ default: true })
-  isActive: boolean;
+  @ManyToOne(() => User, (user) => user.id, { nullable: true })
+  @JoinColumn()
+  created_by: User;
 
-  @Column({ default: false })
-  isDeleted: boolean;
+  @ManyToOne(() => User, (user) => user.id, { nullable: true })
+  @JoinColumn()
+  updated_by: User;
 
   @CreateDateColumn()
   created_at: Date; // Ngày tạo
 
   @UpdateDateColumn()
   updated_at: Date; // Ngày cập nhật
-
-  @DeleteDateColumn()
-  deleted_at: Date; // Ngày xóa
 }

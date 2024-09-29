@@ -1,12 +1,19 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import {
+  encryptValue,
+  handleResponseRemoveKey,
+} from 'src/common/utils/handleResponse';
+import { IPayloadJWT } from 'src/interfaces/common.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UserService,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
@@ -14,15 +21,17 @@ export class AuthService {
     if (user) {
       const isValid = this.usersService.isValidPassword(pass, user.password);
       if (isValid === true) {
-        return user;
+        return handleResponseRemoveKey(user);
       }
     }
     throw new UnprocessableEntityException(
       'Tài khoản hoặc mật khẩu không hợp lệ',
     );
   }
-  async login(user: any) {
-    const payload = { username: user.email, sub: user.id };
+  async login(user: IPayloadJWT) {
+    const key = this.configService.get<string>('SECRET_KEY');
+
+    const payload = { jti: encryptValue(user, key) };
     return {
       access_token: this.jwtService.sign(payload),
     };

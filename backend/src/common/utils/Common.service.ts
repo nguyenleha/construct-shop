@@ -22,11 +22,12 @@ export class CommonService {
     file: Express.Multer.File,
     folder: string,
     configService: ConfigService = new ConfigService(),
+    index?: number,
   ) {
     const domain = configService.get<string>('DOMAIN_API');
     const port = configService.get<number>('PORT_API');
     const folderPath = path.join('public', 'images', folder);
-    const finalName = `${path.basename(file.originalname, path.extname(file.originalname))}-${Date.now()}${path.extname(file.originalname)}`;
+    const finalName = `${path.basename(file.originalname, path.extname(file.originalname))}-${Date.now()}${index ? index : ''}${path.extname(file.originalname)}`;
     const logoValue = `${domain}${port ? `:${port}` : ''}/images${folder}/${finalName}`;
 
     // Tạo thư mục nếu chưa tồn tại

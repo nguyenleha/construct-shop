@@ -12,3 +12,18 @@ export interface PaginationResponse<T> {
   meta: IPaginationMeta;
   links?: IPaginationLinks;
 }
+
+export interface IUser {
+  id: number;
+  name: string;
+  email: string;
+  age: number;
+  gender: string;
+  address: string;
+  // role: string;
+}
+export interface IPayloadJWT extends IUser {
+  iat: number;
+  exp: number;
+  jti: string;
+}
