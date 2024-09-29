@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { getHashPassword } from 'src/common/utils/handleResponse';
-import { compare, compareSync } from 'bcryptjs';
+import { compareSync } from 'bcryptjs';
 
 @Injectable()
 export class UserService {
@@ -29,7 +29,13 @@ export class UserService {
     return user;
   }
   async create(createUserDto: CreateUserDto) {
-    const { password, ...userDetail } = createUserDto;
+    const { password, email, ...userDetail } = createUserDto;
+    const isExists = await this.userRepository.exists({
+      where: { email },
+    });
+    if (isExists) {
+      throw new UnprocessableEntityException('Email đã đăng ký');
+    }
 
     const createUser = {
       ...userDetail,
@@ -38,7 +44,6 @@ export class UserService {
 
     // Save the user to the database
     const userCreated = await this.userRepository.save(createUser);
-
     return this.handleResponse(userCreated); // Return the created user
   }
   findAll() {
@@ -57,7 +62,7 @@ export class UserService {
     return compareSync(password, hash);
   }
   update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+    return `This action updates a #${id} user ${updateUserDto}`;
   }
 
   async remove(id: number) {

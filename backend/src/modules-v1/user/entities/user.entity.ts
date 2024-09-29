@@ -2,12 +2,8 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
-  JoinTable,
-  ManyToMany,
   CreateDateColumn,
   DeleteDateColumn,
-  JoinColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
@@ -41,11 +37,11 @@ export class User {
   isDeleted: boolean;
 
   @CreateDateColumn()
-  created_at: Date; 
+  created_at: Date;
 
   @UpdateDateColumn()
-  updated_at: Date; 
+  updated_at: Date;
 
   @DeleteDateColumn()
-  deleted_at: Date; 
+  deleted_at: Date;
 }

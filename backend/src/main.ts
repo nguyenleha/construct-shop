@@ -8,6 +8,7 @@ import { createValidationPipe } from './common/pipes/validation.pipe';
 import { FileTooLargeFilter } from './common/filters/file-too-large.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { join } from 'path';
+import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -26,6 +27,7 @@ async function bootstrap() {
 
   const reflector = app.get(Reflector);
   app.useGlobalInterceptors(new TransformInterceptor(reflector));
+  app.useGlobalGuards(new JwtAuthGuard(reflector));
 
   // Configuration
   const configService = app.get(ConfigService);

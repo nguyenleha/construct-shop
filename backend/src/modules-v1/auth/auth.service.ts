@@ -17,7 +17,9 @@ export class AuthService {
         return user;
       }
     }
-    throw new UnprocessableEntityException('Tài khoản hoặc mật khẩu không hợp lệ');;
+    throw new UnprocessableEntityException(
+      'Tài khoản hoặc mật khẩu không hợp lệ',
+    );
   }
   async login(user: any) {
     const payload = { username: user.email, sub: user.id };
