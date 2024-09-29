@@ -4,7 +4,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { getHashPassword } from 'src/common/utils/handleResponse';
+import {
+  getHashPassword,
+  handleResponseRemoveKey,
+} from 'src/common/utils/handleResponse';
 import { compareSync } from 'bcryptjs';
 
 @Injectable()
@@ -12,14 +15,6 @@ export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
-
-  handleResponse(user: User) {
-    delete user.password;
-    delete user.isActive;
-    delete user.isDeleted;
-    delete user.deleted_at;
-    return user;
-  }
 
   async checkIdExist(id: number): Promise<boolean> {
     const user = await this.userRepository.exist({ where: { id } });
@@ -39,12 +34,13 @@ export class UserService {
 
     const createUser = {
       ...userDetail,
+      email,
       password: getHashPassword(password),
     };
 
     // Save the user to the database
     const userCreated = await this.userRepository.save(createUser);
-    return this.handleResponse(userCreated); // Return the created user
+    return handleResponseRemoveKey(userCreated); // Return the created user
   }
   findAll() {
     return this.userRepository.find();
