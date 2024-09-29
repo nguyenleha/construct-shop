@@ -18,6 +18,16 @@ export class CommonService {
     return data;
   }
 
+  createFolderImageTrash() {
+    const publicDir = path.resolve(__dirname, '../../../public');
+    const trashDir = path.join(publicDir, 'trash', 'images', 'media');
+
+    // Tạo thư mục trash nếu chưa tồn tại
+    fs.mkdirSync(path.join(publicDir, 'trash'), { recursive: true });
+    fs.mkdirSync(trashDir, { recursive: true });
+
+    return { publicDir, trashDir };
+  }
   async addingFile(
     file: Express.Multer.File,
     folder: string,

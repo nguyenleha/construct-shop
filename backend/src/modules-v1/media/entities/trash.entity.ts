@@ -14,7 +14,7 @@ export class Trash {
   name: string;
 
   @Column()
-  image: string;
+  url: string;
 
   @CreateDateColumn()
   created_at: Date; // Ngày tạo

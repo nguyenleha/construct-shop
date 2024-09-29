@@ -6,7 +6,6 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity({ name: 'media' })
@@ -18,19 +17,12 @@ export class Media {
   name: string;
 
   @Column()
-  image: string;
+  url: string;
 
   @ManyToOne(() => User, (user) => user.id, { nullable: true })
   @JoinColumn()
   created_by: User;
 
-  @ManyToOne(() => User, (user) => user.id, { nullable: true })
-  @JoinColumn()
-  updated_by: User;
-
   @CreateDateColumn()
   created_at: Date; // Ngày tạo
-
-  @UpdateDateColumn()
-  updated_at: Date; // Ngày cập nhật
 }

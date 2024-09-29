@@ -32,12 +32,21 @@ export class MediaController {
   }
 
   @Delete()
-  moveToTrash(@Body('ids') ids: number[]) {
-    return this.mediaService.moveToTrash(ids);
+  moveToTrash(@Body('ids') ids: number[], @User() user: IUser) {
+    return this.mediaService.moveToTrash(ids, user);
+  }
+
+  @Post('restore')
+  restore(@Body('ids') ids: number[], @User() user: IUser) {
+    return this.mediaService.restore(ids, user);
   }
 
   @Delete('emptyTrash')
-  emptyTrash() {
-    return this.mediaService.emptyTrash();
+  emptyTrash(@Body('ids') ids: number[]) {
+    return this.mediaService.emptyTrash(ids);
+  }
+  @Delete('emptyTrashAll')
+  emptyTrashAll() {
+    return this.mediaService.emptyTrashAll();
   }
 }

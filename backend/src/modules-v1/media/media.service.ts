@@ -41,7 +41,6 @@ export class MediaService {
         name: imageValue.name,
         image: image ? imageValue.image : null,
         created_by: user,
-        updated_by: user,
       });
       return this.commonService.removeKey({
         ...newMedia,
@@ -69,7 +68,7 @@ export class MediaService {
       .select([
         'media.id',
         'media.name',
-        'media.image',
+        'media.url',
         'media.created_at',
         'media.updated_at',
       ])
@@ -88,14 +87,8 @@ export class MediaService {
     );
   }
 
-  async moveToTrash(ids: number[]) {
-    // const today = new Date().toISOString().split('T')[0];
-    const publicDir = path.resolve(__dirname, '../../../public');
-    const trashDir = path.join(publicDir, 'trash', 'images', 'media');
-
-    // Tạo thư mục trash nếu chưa tồn tại
-    fs.mkdirSync(path.join(publicDir, 'trash'), { recursive: true });
-    fs.mkdirSync(trashDir, { recursive: true });
+  async moveToTrash(ids: number[], user: IUser) {
+    const { publicDir, trashDir } = this.commonService.createFolderImageTrash();
 
     // Kiểm tra có đủ hình ảnh trong ids
     await Promise.all(
@@ -115,37 +108,99 @@ export class MediaService {
         const media = await this.mediaRepository.findOne({
           where: { id },
         });
-        if (!media || !media.image) return;
+        if (!media || !media.url) return;
 
-        const oldPath = path.join(publicDir, media.image);
-        const newPath = path.join(trashDir, path.basename(media.image));
+        const oldPath = path.join(publicDir, media.url);
+        const newPath = path.join(trashDir, path.basename(media.url));
         // Di chuyển file
         await fs.promises.rename(oldPath, newPath);
 
-        // const trash = await this.trashRepository.save({
-        //   name: media.name,
-        //   image: media.image,
-        // });
+        await this.trashRepository.save({
+          name: media.name,
+          image: media.url,
+          created_by: user,
+        });
 
         // Cập nhật cơ sở dữ liệu
-        // await this.mediaRepository.update(id, {
-        //   isActive: false,
-        //   isDeleted: true,
-        //   deleted_at: new Date(),
-        // });
+        await this.mediaRepository.delete(id);
       }),
     );
 
     return 'Xóa thành công';
   }
 
-  emptyTrash() {
-    // const publicDir = path.resolve(__dirname, '../../../public');
-    // const trashDir = path.join(publicDir, 'trash');
-    // console.log('trashDir :>> ', trashDir);
-    // // if (fs.existsSync(trashDir)) {
-    // //   fs.rmSync(trashDir, { recursive: true });
-    // // }
+  async restore(ids: number[], user: IUser) {
+    const { publicDir, trashDir } = this.commonService.createFolderImageTrash();
+
+    await Promise.all(
+      ids.map(async (id) => {
+        const trashExists = await this.trashRepository.exist({
+          where: { id },
+        });
+        if (!trashExists) {
+          throw new UnprocessableEntityException('Media không tìm thấy');
+        }
+      }),
+    );
+
+    await Promise.all(
+      ids.map(async (id) => {
+        const media = await this.trashRepository.findOne({
+          where: { id },
+        });
+        if (!media || !media.url) return;
+
+        const newPath = path.join(publicDir, media.url);
+        const oldPath = path.join(trashDir, path.basename(media.url));
+        // Di chuyển file
+        await fs.promises.rename(oldPath, newPath);
+
+        await this.mediaRepository.save({
+          name: media.name,
+          image: media.url,
+          created_by: user,
+        });
+
+        // Cập nhật cơ sở dữ liệu
+        await this.trashRepository.delete(id);
+      }),
+    );
+
+    return 'Retore thành công';
+  }
+  async emptyTrash(ids: number[]) {
+    const { trashDir } = this.commonService.createFolderImageTrash();
+
+    await Promise.all(
+      ids.map(async (id) => {
+        const trashExists = await this.trashRepository.exist({
+          where: { id },
+        });
+        if (!trashExists) {
+          throw new UnprocessableEntityException('Media không tìm thấy');
+        }
+      }),
+    );
+
+    await Promise.all(
+      ids.map(async (id) => {
+        const media = await this.trashRepository.findOne({
+          where: { id },
+        });
+        if (!media || !media.url) return;
+        const oldPath = path.join(trashDir, path.basename(media.url));
+        await fs.promises.rm(oldPath, { recursive: true, force: true });
+        await this.trashRepository.delete(id);
+      }),
+    );
+    return 'Xóa thanh cong';
+  }
+
+  async emptyTrashAll() {
+    const { trashDir } = this.commonService.createFolderImageTrash();
+    await fs.promises.rm(trashDir, { recursive: true, force: true });
+    await this.trashRepository.clear();
+
     return 'Xóa thanh cong';
   }
 }
