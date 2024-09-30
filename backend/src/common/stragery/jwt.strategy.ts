@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { decryptValue } from '../utils/handleResponse';
 
@@ -15,7 +15,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    const key = this.configService.get<string>('SECRET_KEY');
-    return decryptValue(payload.jti, key);
+    try {
+      const key = this.configService.get<string>('SECRET_KEY');
+      return decryptValue(payload.jti, key);
+    } catch {
+      new UnauthorizedException('Token khong hop le!');
+    }
   }
 }

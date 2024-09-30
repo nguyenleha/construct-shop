@@ -1,4 +1,8 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -30,10 +34,13 @@ export class AuthService {
   }
   async login(user: IPayloadJWT) {
     const key = this.configService.get<string>('SECRET_KEY');
-
-    const payload = { jti: encryptValue(user, key) };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+    try {
+      const payload = { jti: encryptValue(user, key) };
+      return {
+        access_token: this.jwtService.sign(payload),
+      };
+    } catch {
+      new UnauthorizedException('Token khong hop le!');
+    }
   }
 }
