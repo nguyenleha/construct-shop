@@ -1,5 +1,9 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import {
+  BadRequestException,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
+import { CreateUserDto, RegisterUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
@@ -9,6 +13,7 @@ import {
   handleResponseRemoveKey,
 } from 'src/common/utils/handleResponse';
 import { compareSync } from 'bcryptjs';
+import { IUser } from 'src/interfaces/common.interface';
 
 @Injectable()
 export class UserService {
@@ -23,7 +28,7 @@ export class UserService {
     }
     return user;
   }
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto, user: IUser) {
     const { password, email, ...userDetail } = createUserDto;
     const isExists = await this.userRepository.exists({
       where: { email },
@@ -36,18 +41,50 @@ export class UserService {
       ...userDetail,
       email,
       password: getHashPassword(password),
+      created_by: user,
+      updated_by: user,
     };
 
-    // Save the user to the database
     const userCreated = await this.userRepository.save(createUser);
     return handleResponseRemoveKey(userCreated); // Return the created user
+  }
+
+  //Register User
+  async register(createUserDto: RegisterUserDto) {
+    const { name, email, password, age, gender, address } = createUserDto;
+
+    const isExists = await this.userRepository.findOne({
+      where: { email: email },
+    });
+
+    if (isExists) {
+      throw new BadRequestException('Email đã đăng ký');
+    }
+
+    const newRegister = await this.userRepository.create({
+      name,
+      email,
+      password: getHashPassword(password),
+      age,
+      gender,
+      address,
+      role: 'USER',
+    });
+    const user = await this.userRepository.save(newRegister);
+    return handleResponseRemoveKey(user);
   }
   findAll() {
     return this.userRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
+    if (!user) {
+      throw new UnprocessableEntityException('Tài khoản không tồn tại');
+    }
+    return { ...handleResponseRemoveKey(user) };
   }
   findOneUsername(username: string) {
     return this.userRepository.findOne({
@@ -57,15 +94,22 @@ export class UserService {
   isValidPassword(password: string, hash: string) {
     return compareSync(password, hash);
   }
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user ${updateUserDto}`;
+  async update(id: number, updateUserDto: UpdateUserDto, user: IUser) {
+    await this.checkIdExist(id);
+    const updatedUser = {
+      ...updateUserDto,
+      updated_at: new Date(),
+      updated_by: user,
+    };
+    return await this.userRepository.update(id, updatedUser);
   }
 
-  async remove(id: number) {
+  async remove(id: number, user: IUser) {
     await this.checkIdExist(id);
     const updateUser = {
       isDeleted: true,
       deleted_at: new Date(),
+      deleted_by: user,
     };
     return await this.userRepository.update(id, updateUser);
   }

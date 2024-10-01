@@ -5,6 +5,8 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity({ name: 'users' })
@@ -30,11 +32,26 @@ export class User {
   @Column()
   address: string;
 
+  @Column({ type: 'text', nullable: true })
+  refreshToken: string;
+
   @Column({ default: true })
   isActive: boolean;
 
   @Column({ default: false })
   isDeleted: boolean;
+
+  @ManyToOne(() => User, (user) => user.id, { nullable: true })
+  @JoinColumn()
+  created_by: User;
+
+  @ManyToOne(() => User, (user) => user.id, { nullable: true })
+  @JoinColumn()
+  updated_by: User;
+
+  @ManyToOne(() => User, (user) => user.id, { nullable: true })
+  @JoinColumn()
+  deleted_by: User;
 
   @CreateDateColumn()
   created_at: Date;
@@ -44,4 +61,7 @@ export class User {
 
   @DeleteDateColumn()
   deleted_at: Date;
+
+  @Column()
+  role: string;
 }

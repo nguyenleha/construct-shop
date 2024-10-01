@@ -11,6 +11,7 @@ import {
   handleResponseRemoveKey,
 } from 'src/common/utils/handleResponse';
 import { IPayloadJWT } from 'src/interfaces/common.interface';
+import { RegisterUserDto } from '../user/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -42,5 +43,12 @@ export class AuthService {
     } catch {
       new UnauthorizedException('Token khong hop le!');
     }
+  }
+  async register(user: RegisterUserDto) {
+    const newUser = await this.usersService.register(user);
+    return {
+      id: newUser?.id,
+      createdAt: newUser?.created_at,
+    };
   }
 }
