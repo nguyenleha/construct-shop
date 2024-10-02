@@ -9,6 +9,7 @@ import { FileTooLargeFilter } from './common/filters/file-too-large.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { join } from 'path';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -45,7 +46,8 @@ async function bootstrap() {
     type: VersioningType.URI,
     defaultVersion: ['1'],
   });
-
+  //COOKIES
+  app.use(cookieParser());
   // Port
   await app.listen(configService.get('PORT_API') || 8888);
 }

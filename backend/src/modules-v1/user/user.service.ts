@@ -113,4 +113,14 @@ export class UserService {
     };
     return await this.userRepository.update(id, updateUser);
   }
+
+  async updatedUserToken(id: number, refreshToken: string) {
+    return await this.userRepository.update(id, { refreshToken });
+  }
+
+  async findUserByToken(refreshToken: string) {
+    return await this.userRepository.findOne({
+      where: { refreshToken: refreshToken },
+    });
+  }
 }
