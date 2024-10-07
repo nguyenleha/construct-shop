@@ -10,6 +10,7 @@ import { MediaModule } from './modules-v1/media/media.module';
 import { UserModule } from './modules-v1/user/user.module';
 import { AuthModule } from './modules-v1/auth/auth.module';
 import { BrandModule } from './modules-v1/brand/brand.module';
+import { CategoryModule } from './modules-v1/category/category.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { BrandModule } from './modules-v1/brand/brand.module';
     UserModule,
     AuthModule,
     BrandModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

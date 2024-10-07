@@ -20,7 +20,7 @@ export class BrandService {
     private paginationService: PaginationService,
   ) { }
 
-  async checkBrandId(request: { where: { id?: number, name?: string }, relations?: string[] }) {
+  async checkBrandId(request: { where: { id?: number }, relations?: string[] }) {
     const brand = await this.brandRepository.findOne(request);
     if (!brand) {
       throw new UnprocessableEntityException('Brand không tồn tại');
@@ -116,7 +116,7 @@ export class BrandService {
 
   async remove(id: number, user: IUser) {
     await this.checkBrandId({ where: { id } })
-    
+
     return this.brandRepository.update(id, {
       updated_by: user,
       deleted_by: user,
