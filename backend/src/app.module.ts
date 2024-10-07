@@ -9,6 +9,7 @@ import ms from 'ms';
 import { MediaModule } from './modules-v1/media/media.module';
 import { UserModule } from './modules-v1/user/user.module';
 import { AuthModule } from './modules-v1/auth/auth.module';
+import { BrandModule } from './modules-v1/brand/brand.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { AuthModule } from './modules-v1/auth/auth.module';
     MediaModule,
     UserModule,
     AuthModule,
+    BrandModule,
   ],
   controllers: [AppController],
   providers: [AppService],

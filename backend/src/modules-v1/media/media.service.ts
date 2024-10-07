@@ -39,7 +39,7 @@ export class MediaService {
       );
       const newMedia = await this.mediaRepository.save({
         name: imageValue.name,
-        image: image ? imageValue.image : null,
+        url: image ? imageValue.image : null,
         created_by: user,
       });
       return this.commonService.removeKey({
@@ -70,7 +70,6 @@ export class MediaService {
         'media.name',
         'media.url',
         'media.created_at',
-        'media.updated_at',
       ])
       .orderBy(`media.${orderByField || 'id'}`, order || 'DESC');
 
