@@ -12,6 +12,7 @@ import { AuthModule } from './modules-v1/auth/auth.module';
 import { BrandModule } from './modules-v1/brand/brand.module';
 import { CategoryModule } from './modules-v1/category/category.module';
 import { FileModule } from './modules-v1/file/file.module';
+import { RolesModule } from './modules-v1/roles/roles.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { FileModule } from './modules-v1/file/file.module';
     BrandModule,
     CategoryModule,
     FileModule,
+    RolesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
