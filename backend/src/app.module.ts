@@ -9,9 +9,6 @@ import ms from 'ms';
 import { MediaModule } from './modules-v1/media/media.module';
 import { UserModule } from './modules-v1/user/user.module';
 import { AuthModule } from './modules-v1/auth/auth.module';
-import { FileModule } from './modules-v1/file/file.module';
-import { RoleModule } from './modules-v1/role/role.module';
-import { PermissionModule } from './modules-v1/permission/permission.module';
 
 @Module({
   imports: [
@@ -47,9 +44,6 @@ import { PermissionModule } from './modules-v1/permission/permission.module';
     MediaModule,
     UserModule,
     AuthModule,
-    FileModule,
-    RoleModule,
-    PermissionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
