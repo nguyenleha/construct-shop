@@ -32,11 +32,8 @@ export class AuthController {
   }
   @Public()
   @Post('register')
-  register(
-    @Body() registerUserDto: RegisterUserDto,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    return this.authService.register(registerUserDto, response);
+  register(@Body() registerUserDto: RegisterUserDto) {
+    return this.authService.register(registerUserDto);
   }
 
   @Get('/account')
