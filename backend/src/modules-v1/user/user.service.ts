@@ -68,7 +68,6 @@ export class UserService {
       age,
       gender,
       address,
-      role: 'USER',
     });
     const user = await this.userRepository.save(newRegister);
     return handleResponseRemoveKey(user);

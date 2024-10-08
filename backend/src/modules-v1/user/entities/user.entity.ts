@@ -1,4 +1,4 @@
-import { Role } from 'src/modules-v1/role/entities/role.entity';
+// import { Role } from 'src/modules-v1/role/entities/role.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -65,11 +65,11 @@ export class User {
   @DeleteDateColumn()
   deleted_at: Date;
 
-  @ManyToMany(() => Role, (role) => role.users)
-  @JoinTable({
-    name: 'user_role_relation',
-    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'role_id', referencedColumnName: 'id' },
-  })
-  roles: Role[];
+  // @ManyToMany(() => Role, (role) => role.users)
+  // @JoinTable({
+  //   name: 'user_role_relation',
+  //   joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+  //   inverseJoinColumn: { name: 'role_id', referencedColumnName: 'id' },
+  // })
+  // roles: Role[];
 }
