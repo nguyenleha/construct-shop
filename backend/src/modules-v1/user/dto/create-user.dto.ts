@@ -1,3 +1,4 @@
+import { PartialType } from '@nestjs/mapped-types';
 import { IsEmail, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateUserDto {
@@ -12,6 +13,10 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty({ message: 'Password không được để trống' })
   password: string;
+
+  @IsString()
+  @IsNotEmpty({ message: 'Confirm Password không được để trống' })
+  confirmPassword: string;
 
   @IsNumber()
   @IsNotEmpty({ message: 'Age không được để trống' })
@@ -30,28 +35,8 @@ export class CreateUserDto {
   role: string;
 }
 
-export class RegisterUserDto {
+export class RegisterUserDto extends PartialType(CreateUserDto) {
   @IsString()
-  @IsNotEmpty({ message: 'Name không được để trống' })
-  name: string;
-
-  @IsEmail({}, { message: 'Sai định dạng email' })
-  @IsNotEmpty({ message: 'Email không được để trống' })
-  email: string;
-
-  @IsString()
-  @IsNotEmpty({ message: 'Password không được để trống' })
-  password: string;
-
-  @IsNumber()
-  @IsNotEmpty({ message: 'Age không được để trống' })
-  age: number;
-
-  @IsString()
-  @IsNotEmpty({ message: 'Gender không được để trống' })
-  gender: string;
-
-  @IsString()
-  @IsNotEmpty({ message: 'Address không được để trống' })
-  address: string;
+  @IsNotEmpty({ message: 'Confirm Password không được để trống' })
+  confirmPassword: string;
 }

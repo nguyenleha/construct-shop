@@ -28,7 +28,7 @@ export class UserService {
     }
     return user;
   }
-  async create(createUserDto: CreateUserDto, user: IUser) {
+  async create(createUserDto: RegisterUserDto, user: IUser) {
     const { password, email, ...userDetail } = createUserDto;
     const isExists = await this.userRepository.exists({
       where: { email },
@@ -36,7 +36,7 @@ export class UserService {
     if (isExists) {
       throw new UnprocessableEntityException('Email đã đăng ký');
     }
-
+    delete createUserDto.confirmPassword;
     const createUser = {
       ...userDetail,
       email,
