@@ -58,12 +58,10 @@ export class AuthService {
       new UnauthorizedException('Token khong hop le!');
     }
   }
-  async register(user: RegisterUserDto) {
+  async register(user: RegisterUserDto, response: Response) {
     const newUser = await this.usersService.register(user);
-    return {
-      id: newUser?.id,
-      createdAt: newUser?.created_at,
-    };
+    delete user.confirmPassword;
+    return await this.login(newUser, response);
   }
 
   createRefreshToken = (payload: any) => {
