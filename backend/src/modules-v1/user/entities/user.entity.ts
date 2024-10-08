@@ -1,3 +1,4 @@
+import { Role } from 'src/modules-v1/role/entities/role.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -7,6 +8,8 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 @Entity({ name: 'users' })
@@ -62,6 +65,11 @@ export class User {
   @DeleteDateColumn()
   deleted_at: Date;
 
-  @Column()
-  role: string;
+  @ManyToMany(() => Role, (role) => role.users)
+  @JoinTable({
+    name: 'user_role_relation',
+    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'role_id', referencedColumnName: 'id' },
+  })
+  roles: Role[];
 }
