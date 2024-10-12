@@ -3,7 +3,11 @@ import { Page } from '../entities/page.entity';
 import { Repository } from 'typeorm';
 import { Permission } from '../entities/permission.entity';
 import { CreatePageDto } from '../dto/create-role.dto';
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  NotFoundException,
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { UpdatePageDto } from '../dto/update-role.dto';
 
 export class PageService {
@@ -47,8 +51,19 @@ export class PageService {
     if (!isExist) {
       throw new NotFoundException('Page không tồn tại');
     }
+    const currentPage = await this.pageRepository.findOne({ where: { id } });
+
+    // Kiểm tra tên đã tồn tại
+    const existingPage = await this.pageRepository.findOne({ where: { name } });
+
+    // Nếu tên đã tồn tại và khác với tên của Page hiện tại, giữ nguyên tên cũ
+    const newName =
+      existingPage && existingPage.id !== id ? currentPage.name : name;
+
+    // Kiểm tra và lấy permissions
     const permissions = await this.checkPermissionId(permissionIds);
 
-    return await this.pageRepository.save({ name, permissions });
+    // Cập nhật và lưu Page
+    return await this.pageRepository.save({ id, name: newName, permissions });
   }
 }

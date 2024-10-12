@@ -1,5 +1,13 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { IsEmail, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { Match } from 'src/common/decorators/validatorMatch';
 
 export class CreateUserDto {
   @IsString()
@@ -16,6 +24,9 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty({ message: 'Confirm Password không được để trống' })
+  @Match('password', {
+    message: 'Password và Confirm Password phải trùng nhau',
+  })
   confirmPassword: string;
 
   @IsNumber()
@@ -30,13 +41,10 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'Address không được để trống' })
   address: string;
 
-  @IsString()
-  @IsNotEmpty({ message: 'role không được để trống' })
-  role: string;
+  @IsOptional()
+  @IsArray()
+  @IsNumber({}, { each: true })
+  roleIds?: number[];
 }
 
-export class RegisterUserDto extends PartialType(CreateUserDto) {
-  @IsString()
-  @IsNotEmpty({ message: 'Confirm Password không được để trống' })
-  confirmPassword: string;
-}
+

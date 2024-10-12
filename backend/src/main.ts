@@ -10,6 +10,7 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 import { join } from 'path';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import cookieParser from 'cookie-parser';
+import { RolesGuard } from './common/guards/role.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -29,6 +30,7 @@ async function bootstrap() {
   const reflector = app.get(Reflector);
   app.useGlobalInterceptors(new TransformInterceptor(reflector));
   app.useGlobalGuards(new JwtAuthGuard(reflector));
+  app.useGlobalGuards(new RolesGuard(reflector));
 
   // Configuration
   const configService = app.get(ConfigService);

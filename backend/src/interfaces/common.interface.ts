@@ -1,4 +1,5 @@
 import { IPaginationLinks, IPaginationMeta } from 'nestjs-typeorm-paginate';
+import { Role } from 'src/modules-v1/roles/entities/role.entity';
 
 export interface GetParamsPaginateDto {
   page: number;
@@ -20,7 +21,9 @@ export interface IUser {
   age: number;
   gender: string;
   address: string;
-  // role: string;
+  created_at: string;
+  updated_at: string;
+  roles: Role[];
 }
 export interface IPayloadJWT extends IUser {
   iat: number;
