@@ -11,10 +11,9 @@ import {
   encryptValue,
   handleResponseRemoveKey,
 } from 'src/common/utils/handleResponse';
-import { IPayloadJWT, IUser } from 'src/interfaces/common.interface';
-import { RegisterUserDto } from '../user/dto/create-user.dto';
+import { IUser } from 'src/interfaces/common.interface';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 import ms from 'ms';
-import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -24,102 +23,69 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOneUsername(username);
+  async validateUser(email: string, pass: string): Promise<any> {
+    const user = await this.usersService.findOneUsername(email);
     if (user) {
       const isValid = this.usersService.isValidPassword(pass, user.password);
       if (isValid === true) {
-        return handleResponseRemoveKey(user);
+        return {
+          ...handleResponseRemoveKey(user),
+          roles: this.usersService.handleConvertRole(user),
+        };
       }
     }
     throw new UnprocessableEntityException(
       'Tài khoản hoặc mật khẩu không hợp lệ',
     );
   }
-  async login(user: IPayloadJWT, response: Response) {
+  async login(user: IUser) {
     const key = this.configService.get<string>('SECRET_KEY');
-    try {
-      const payload = { jti: encryptValue(user, key) };
-      const refresh_token = this.createRefreshToken(payload);
-
-      //update user with refresh_token
-      await this.usersService.updatedUserToken(user.id, refresh_token);
-
-      //set refresh_token cookies
-      response.cookie('refresh_token', refresh_token, {
-        httpOnly: true,
-        maxAge: ms(this.configService.get<string>('JWT_REFRESH_EXPIRES')),
-      });
-      return {
-        access_token: this.jwtService.sign(payload),
-        refresh_token,
-      };
-    } catch {
-      new UnauthorizedException('Token khong hop le!');
-    }
-  }
-  async register(user: RegisterUserDto) {
-    const newUser = await this.usersService.register(user);
+    const payload = { jti: encryptValue(user, key) };
     return {
-      id: newUser?.id,
-      createdAt: newUser?.created_at,
+      token_type: 'Bearer',
+      expires_in:
+        ms(this.configService.get<string>('JWT_ACCESS_EXPIRES')) / 1000,
+      access_token: this.createAccessToken(payload),
+      refresh_token: this.createRefreshToken(payload),
     };
   }
-
-  createRefreshToken = (payload: any) => {
-    const refresh_token = this.jwtService.sign(payload, {
+  async register(createUserDto: CreateUserDto) {
+    const newUser = await this.usersService.create(createUserDto);
+    return await this.login(newUser);
+  }
+  createAccessToken(user: { jti: string }) {
+    return this.jwtService.sign(user);
+  }
+  createRefreshToken = (user: { jti: string }) => {
+    return this.jwtService.sign(user, {
       secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
       expiresIn:
         ms(this.configService.get<string>('JWT_REFRESH_EXPIRES')) / 1000,
     });
-    return refresh_token;
   };
 
-  processNewToken = async (refreshToken: string, response: Response) => {
+  async refreshToken(refreshToken: string) {
     try {
-      this.jwtService.verify(refreshToken, {
+      const payload = this.jwtService.verify(refreshToken, {
         secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
       });
+      delete payload.iat;
+      delete payload.exp;
 
-      const user = await this.usersService.findUserByToken(refreshToken);
-
-      if (user) {
-        //update refresh token
-        const key = this.configService.get<string>('SECRET_KEY');
-        try {
-          const payload = { jti: encryptValue(user, key) };
-          const refresh_token = this.createRefreshToken(payload);
-
-          //update user with refresh_token
-          await this.usersService.updatedUserToken(user.id, refresh_token);
-
-          //set refresh_token cookies
-          response.clearCookie('refresh_token');
-          response.cookie('refresh_token', refresh_token, {
-            httpOnly: true,
-            maxAge: ms(this.configService.get<string>('JWT_REFRESH_EXPIRES')),
-          });
-          return {
-            access_token: this.jwtService.sign(payload),
-            refresh_token,
-          };
-        } catch {
-          new UnauthorizedException('Token khong hop le!');
-        }
-      } else {
-        throw new BadRequestException(
-          `Refresh token khong hop le, vui long login`,
-        );
-      }
-    } catch (e) {
-      throw new BadRequestException(
-        `Refresh token khong hop le, vui long login`,
-      );
+      return {
+        token_type: 'Bearer',
+        expires_in:
+          ms(this.configService.get<string>('JWT_ACCESS_EXPIRES')) / 1000,
+        access_token: this.createAccessToken(payload),
+        refresh_token: this.createRefreshToken(payload),
+      };
+    } catch {
+      throw new UnauthorizedException('Token không hợp lệ hoặc đã hết hạn');
     }
-  };
-  async logout(response: Response, user: IUser) {
-    await this.usersService.updatedUserToken(user.id, '');
-    response.clearCookie('refresh_token');
-    return 'OK';
   }
+  // async logout(response: Response, user: IUser) {
+  //   await this.usersService.updatedUserToken(user.id, '');
+  //   response.clearCookie('refresh_token');
+  //   return 'OK';
+  // }
 }
