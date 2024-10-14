@@ -21,5 +21,6 @@ import { PermissionService } from './service/permission.service';
   ],
   controllers: [RolesController],
   providers: [RolesService, PageService, PermissionService],
+  exports: [RolesService, PageService, PermissionService],
 })
 export class RolesModule {}

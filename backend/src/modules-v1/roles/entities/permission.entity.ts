@@ -22,7 +22,7 @@ export class Permission {
 
   @OneToMany(
     () => RolePagePermissionRelation,
-    (rolePagePermission) => rolePagePermission.permission,
+    (rolePagePermission) => rolePagePermission.role,
   )
   rolePermission: RolePagePermissionRelation[];
 }

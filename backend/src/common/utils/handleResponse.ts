@@ -62,7 +62,7 @@ export function decryptValue(
 
   // Decompress the JSON string
   const decompressedText = inflateSync(
-    Buffer.from(decrypted, 'utf8'),
+    Buffer.from(decrypted, 'base64'),
   ).toString('utf8');
 
   const obj = JSON.parse(decompressedText);

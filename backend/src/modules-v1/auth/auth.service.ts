@@ -11,10 +11,9 @@ import {
   encryptValue,
   handleResponseRemoveKey,
 } from 'src/common/utils/handleResponse';
-import {  IUser } from 'src/interfaces/common.interface';
+import { IUser } from 'src/interfaces/common.interface';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import ms from 'ms';
-
 
 @Injectable()
 export class AuthService {
@@ -24,8 +23,8 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOneUsername(username);
+  async validateUser(email: string, pass: string): Promise<any> {
+    const user = await this.usersService.findOneUsername(email);
     if (user) {
       const isValid = this.usersService.isValidPassword(pass, user.password);
       if (isValid === true) {
@@ -64,7 +63,6 @@ export class AuthService {
         ms(this.configService.get<string>('JWT_REFRESH_EXPIRES')) / 1000,
     });
   };
-
 
   async refreshToken(refreshToken: string) {
     try {

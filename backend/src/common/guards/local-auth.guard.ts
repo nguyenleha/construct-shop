@@ -14,12 +14,10 @@ export class LocalAuthGuard extends AuthGuard('local') {
 
   handleRequest(err, user, info, context: ExecutionContext) {
     const request: Request = this.getRequest(context);
-    const { username, password } = request.body;
+    const { email, password } = request.body;
 
-    if (!username || !password) {
-      throw new UnprocessableEntityException(
-        'Vui lòng nhập username và mật khẩu',
-      );
+    if (!email || !password) {
+      throw new UnprocessableEntityException('Vui lòng nhập email và mật khẩu');
     }
     if (err) {
       throw new UnprocessableEntityException(

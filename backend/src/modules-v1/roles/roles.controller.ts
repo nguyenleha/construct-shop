@@ -25,6 +25,7 @@ import { PageService } from './service/page.service';
 import { Roles } from 'src/common/decorators/role';
 import { APP_CONFIG } from 'src/config/app.config';
 import { RolesGuard } from 'src/common/guards/role.guard';
+import { Public } from 'src/common/decorators/public';
 
 @Controller('roles')
 export class RolesController {
@@ -36,7 +37,6 @@ export class RolesController {
 
   // =========== Permission ===========
 
-  @UseGuards(RolesGuard)
   @Roles({
     page: APP_CONFIG().pages.Permissions,
     permission: APP_CONFIG().permissions.Read,
@@ -46,7 +46,6 @@ export class RolesController {
     return this.permissionService.findAllPermission();
   }
 
-  @UseGuards(RolesGuard)
   @Roles({
     page: APP_CONFIG().pages.Permissions,
     permission: APP_CONFIG().permissions.Created,
@@ -56,7 +55,6 @@ export class RolesController {
     return this.permissionService.createPermission(createPermissionDto);
   }
 
-  @UseGuards(RolesGuard)
   @Roles({
     page: APP_CONFIG().pages.Permissions,
     permission: APP_CONFIG().permissions.Updated,
@@ -90,7 +88,6 @@ export class RolesController {
     return this.pageService.createPage(createPageDto);
   }
 
-  @UseGuards(RolesGuard)
   @Roles({
     page: APP_CONFIG().pages.Pages,
     permission: APP_CONFIG().permissions.Updated,
@@ -102,27 +99,25 @@ export class RolesController {
 
   // ======================ROLE==============
 
-  @UseGuards(RolesGuard)
   @Roles({
     page: APP_CONFIG().pages.Roles,
     permission: APP_CONFIG().permissions.Created,
   })
-  @Post()
+  @Public()
   createRole(@Body() createRoleDto: CreateRoleDto) {
     return this.rolesService.createRole(createRoleDto);
   }
 
-  @UseGuards(RolesGuard)
   @Roles({
     page: APP_CONFIG().pages.Roles,
     permission: APP_CONFIG().permissions.Read,
   })
+  // @Public()
   @Get()
   findAllRole() {
     return this.rolesService.findAllRole();
   }
 
-  @UseGuards(RolesGuard)
   @Roles({
     page: APP_CONFIG().pages.Roles,
     permission: APP_CONFIG().permissions.Updated,

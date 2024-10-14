@@ -7,4 +7,5 @@ export interface GetParamsUserDto extends GetParamsPaginateDto {
   gender?: string;
   address?: string;
   isActive?: boolean;
+
 }

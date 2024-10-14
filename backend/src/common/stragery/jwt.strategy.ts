@@ -15,11 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    try {
-      const key = this.configService.get<string>('SECRET_KEY');
-      return decryptValue(payload.jti, key);
-    } catch {
-      new UnauthorizedException('Token khong hop le!');
-    }
+    const key = this.configService.get<string>('SECRET_KEY');
+    return decryptValue(payload.jti, key);
   }
 }

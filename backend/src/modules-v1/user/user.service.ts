@@ -63,7 +63,7 @@ export class UserService {
     if (isExists) {
       throw new UnprocessableEntityException('Email đã đăng ký');
     }
-    delete createUserDto.confirmPassword;
+
     const createUser = {
       ...userDetail,
       email,
@@ -76,6 +76,7 @@ export class UserService {
       createUser.created_by = user;
       createUser.updated_by = user;
     }
+
     if (roleIds?.length && user) {
       const roles = await this.roleRepository.findByIds(roleIds);
       if (roles.length) {
@@ -89,6 +90,7 @@ export class UserService {
     }
 
     const userCreated = await this.userRepository.save(createUser);
+
     return handleResponseRemoveKey(userCreated); // Return the created user
   }
 
@@ -112,15 +114,21 @@ export class UserService {
       where: { id },
       relations: ['roles'], // Lấy các vai trò hiện tại
     });
-    if (roleIds?.length && user) {
+    console.log('roleId', roleIds);
+    if (roleIds.length) {
       const roles = await this.roleRepository.findByIds(roleIds);
+      console.log('Roles found:', roles); // Kiểm tra xem roles có tìm thấy không
       if (roles.length) {
         for (const roleId of roleIds) {
           if (!roles.find((role) => role.id === roleId)) {
             throw new NotFoundException(`Role id:\'${roleId}\' không tìm thấy`);
           }
         }
-        updateUser.roles = roles;
+        if (roles.length) {
+          updateUser.roles = roles; // Gán lại roles nếu có
+        } else {
+          console.log('No roles found or empty roles.');
+        }
       }
     }
     // Cập nhật thông tin người dùng, bao gồm cả vai trò
@@ -128,6 +136,7 @@ export class UserService {
       ...existingUser,
       ...updateUser,
     });
+    console.log('User Roles:', userUpdated.roles);
     return handleResponseRemoveKey(userUpdated);
   }
 

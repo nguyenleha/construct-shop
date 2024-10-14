@@ -1,4 +1,3 @@
-// import { Role } from 'src/modules-v1/role/entities/role.entity';
 import { Role } from 'src/modules-v1/roles/entities/role.entity';
 import {
   Entity,
@@ -66,7 +65,7 @@ export class User {
   @DeleteDateColumn()
   deleted_at: Date;
 
-  @ManyToMany(() => Role, (role) => role.users)
+  @ManyToMany(() => Role, (role) => role.users, { cascade: true })
   @JoinTable({
     name: 'user_role_relation',
     joinColumn: { name: 'user_id', referencedColumnName: 'id' },

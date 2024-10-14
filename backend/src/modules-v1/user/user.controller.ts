@@ -15,8 +15,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { IUser } from 'src/interfaces/common.interface';
 import { Public, User } from 'src/common/decorators/public';
 import { GetParamsUserDto } from './dto/get-user.dto';
-import { RolesGuard } from 'src/common/guards/role.guard';
-import { Role } from '../roles/entities/role.entity';
+
 import { Roles } from 'src/common/decorators/role';
 import { APP_CONFIG } from 'src/config/app.config';
 
@@ -25,7 +24,6 @@ import { APP_CONFIG } from 'src/config/app.config';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(RolesGuard)
   @Roles({ permission: APP_CONFIG().permissions.Created })
   @Post()
   create(@Body() createUserDto: CreateUserDto, @User() user: IUser) {
@@ -33,7 +31,6 @@ export class UserController {
   }
 
   @Roles({ permission: APP_CONFIG().permissions.Read })
-  @Public()
   @Get()
   findAll(@Query() qs: GetParamsUserDto) {
     return this.userService.findAll(qs);

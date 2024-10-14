@@ -29,7 +29,7 @@ export class Page {
   // Many-to-Many với Role
   @OneToMany(
     () => RolePagePermissionRelation,
-    (rolePagePermission) => rolePagePermission.page,
+    (rolePagePermission) => rolePagePermission.role,
   )
   rolePage: RolePagePermissionRelation[];
 }
