@@ -19,6 +19,7 @@ export class AppController {
     return this.appService.getHello();
   }
   @UseGuards(LocalAuthGuard)
+  @Public()
   @Post('/login')
   handleLogin(@User() user: IUser) {
     return this.authService.login(user);
@@ -34,7 +35,8 @@ export class AppController {
   getRefreshToken(@Body('token') token: string) {
     return this.authService.refreshToken(token);
   }
-  @UseGuards(JwtAuthGuard)
+  @Public()
+  // @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@User() user: IUser) {
     return user;

@@ -7,6 +7,8 @@ export const handleResponseRemoveKey = (response: any) => {
   delete response.isActive;
   delete response.isDeleted;
   delete response.deleted_at;
+  delete response.created_by;
+  delete response.updated_by;
   delete response.refreshToken;
   return response;
 };
@@ -47,7 +49,9 @@ export function decryptValue(
   secretKey: string,
 ): object {
   const [ivBase64, encryptedTextBase64] = encryptedValue.split(':');
-
+  if (!ivBase64 || !encryptedTextBase64) {
+    throw new Error('Invalid encrypted data format');
+  }
   const iv = Buffer.from(ivBase64, 'base64');
   const key = Buffer.from(secretKey, 'hex');
 
@@ -58,7 +62,7 @@ export function decryptValue(
 
   // Decompress the JSON string
   const decompressedText = inflateSync(
-    Buffer.from(decrypted, 'base64'),
+    Buffer.from(decrypted, 'utf8'),
   ).toString('utf8');
 
   const obj = JSON.parse(decompressedText);

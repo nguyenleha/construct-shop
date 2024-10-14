@@ -13,7 +13,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IUser } from 'src/interfaces/common.interface';
-import { User } from 'src/common/decorators/public';
+import { Public, User } from 'src/common/decorators/public';
 import { GetParamsUserDto } from './dto/get-user.dto';
 import { RolesGuard } from 'src/common/guards/role.guard';
 import { Role } from '../roles/entities/role.entity';
@@ -33,6 +33,7 @@ export class UserController {
   }
 
   @Roles({ permission: APP_CONFIG().permissions.Read })
+  @Public()
   @Get()
   findAll(@Query() qs: GetParamsUserDto) {
     return this.userService.findAll(qs);
